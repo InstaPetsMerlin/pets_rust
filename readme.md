@@ -6,6 +6,21 @@ Social network for pets
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
+run
+
+```sh
+cargo run
+```
+
+you will see something similar to:
+
+```sh
+Mounting /api/v1/:
+    => POST /api/v1/user application/json (new_user)
+    => GET /api/v1/users/<username> application/json (find_user)
+🚀 Rocket has launched from http://localhost:8000
+```
+
 ### Prerequisites
 
 you need rust and diesel
@@ -18,41 +33,13 @@ Give examples
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+To install rust follow [this ](https://www.rust-lang.org/tools/install)
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+To install diesel follow [this](http://diesel.rs/guides/getting-started/)
 
 ## Running the tests
 
 Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Deployment
 
@@ -71,20 +58,3 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
-
