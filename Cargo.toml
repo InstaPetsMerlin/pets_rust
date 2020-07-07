@@ -17,6 +17,7 @@ serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 custom_derive ="0.1.7"
+jsonwebtoken = "7"
 
 [dependencies.rocket_contrib]
 version = "*"
