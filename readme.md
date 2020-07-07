@@ -11,6 +11,11 @@ create a database:
 docker run --name pets -p 5432:5432 -e POSTGRES_PASSWORD=pets -e POSTGRES_USER=pets -e POSTGRES_DB=pets -d postgres
 ```
 
+run migrations:
+```sh
+diesel migration run
+```
+
 set a env file with the db credentials
 ```sh
 echo DATABASE_URL=postgres://pets:pets@localhost:5432/pets > .env
