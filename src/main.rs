@@ -1,4 +1,3 @@
-
 #![feature(plugin, const_fn, decl_macro, proc_macro_hygiene)]
 #![allow(proc_macro_derive_resolution_fallback, unused_attributes)]
 
@@ -22,6 +21,7 @@ mod db;
 mod models;
 mod routes;
 mod schema;
+mod authentication;
 
 fn rocket() -> rocket::Rocket {
     dotenv().ok();
@@ -33,7 +33,7 @@ fn rocket() -> rocket::Rocket {
         .manage(pool)
         .mount(
             "/api/v1/",
-            routes![get_all, new_user, find_user],
+            routes![get_all, new_user, find_user, login],
         )
 }
 
