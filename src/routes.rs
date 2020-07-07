@@ -55,3 +55,10 @@ pub fn find_user(conn: DbConn, username: &RawStr) -> Json<Value> {
         "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
     }))
 }
+
+#[get("/", format = "application/json")]
+pub fn health() -> Json<Value> {
+    Json(json!({
+        "result": String::from("hello, world"),
+    }))
+}
