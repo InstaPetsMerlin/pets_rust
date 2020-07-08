@@ -1,6 +1,5 @@
 #![feature(plugin, const_fn, decl_macro, proc_macro_hygiene)]
 #![allow(proc_macro_derive_resolution_fallback, unused_attributes)]
-
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
@@ -13,16 +12,17 @@ extern crate rocket_contrib;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
+
 use dotenv::dotenv;
 use std::env;
-use routes::*;
+use delivery::routes::*;
 use std::process::Command;
-#[path = "datasource/db.rs"] mod db;
-#[path = "repositories/models.rs"] mod models;
-#[path = "delivery/routes.rs"] mod routes;
-// #[path = "delivery/api_key.rs"] mod api_key;
-#[path = "datasource/schema.rs"] mod schema;
-#[path = "use_case/authentication.rs"] mod authentication;
+use crate::datasource::db;
+
+mod datasource;
+mod delivery;
+mod repositories;
+mod use_case;
 
 fn rocket() -> rocket::Rocket {
     dotenv().ok();

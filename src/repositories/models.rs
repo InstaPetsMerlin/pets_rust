@@ -2,8 +2,8 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-use super::schema::users;
-use super::schema::users::dsl::users as all_users;
+use crate::datasource::schema::users;
+use crate::datasource::schema::users::dsl::users as all_users;
 
 #[derive(Serialize, Queryable)]
 pub struct User {

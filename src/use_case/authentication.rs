@@ -1,5 +1,5 @@
 use jsonwebtoken::{decode, DecodingKey, encode, EncodingKey, Header, Validation};
-use jsonwebtoken::errors::ErrorKind;
+use jsonwebtoken::errors::{ErrorKind, Error};
 use serde::{Deserialize, Serialize};
 
 const AUTH_SECRET: &'static [u8; 15] = b"some_secret_key";
@@ -11,14 +11,13 @@ struct Claims {
     exp: usize,
 }
 
-pub fn authenticate(token: &String) -> bool {
+pub fn authenticate(token: &String) -> Result<bool, Error> {
     let validation = Validation { ..Validation::default() };
     let key = &DecodingKey::from_secret(AUTH_SECRET);
     let token_data = match decode::<Claims>(&token, key, &validation) {
-        Ok(c) => return true,
-        Err(err) => panic!("some error"),
+        Ok(c) => return Ok(true),
+        Err(e) => return Err(e),
     };
-    false
 }
 
 pub fn generate_token(username: &String, pet_name: &String) -> String {
