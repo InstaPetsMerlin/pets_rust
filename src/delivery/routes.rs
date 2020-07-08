@@ -1,12 +1,15 @@
 use rocket::http::RawStr;
 use rocket_contrib::json::Json;
+use rocket::http::Status;
 use serde_json::Value;
 
-use crate::authentication::generate_token;
+use crate::authentication::{generate_token, authenticate};
 use crate::models::LoginInfo;
 
 use super::db::Conn as DbConn;
 use super::models::{NewUser, User};
+use rocket::request::{FromRequest, Outcome};
+use rocket::{Request, request};
 
 #[post("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {
@@ -50,10 +53,16 @@ pub fn login(conn: DbConn, login_info: Json<LoginInfo>) -> Json<Value> {
 }
 
 #[get("/users/<username>", format = "application/json")]
-pub fn find_user(conn: DbConn, username: &RawStr) -> Json<Value> {
-    Json(json!({
+pub fn find_user(conn: DbConn, username: &RawStr, key: ApiKey) -> Json<Value> {
+    let result = return match is_valid(&*key.0) {
+        true => Json(json!({
         "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
-    }))
+    })),
+        false => Json(json!({
+            "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
+        })),
+    };
+
 }
 
 #[get("/", format = "application/json")]
@@ -61,4 +70,34 @@ pub fn health() -> Json<Value> {
     Json(json!({
         "result": String::from("hello, world"),
     }))
+}
+
+////
+
+pub struct ApiKey(String);
+
+/// Returns true if `key` is a valid API key string.
+pub fn is_valid(key: &str) -> bool {
+    authenticate(&String::from(key.split_whitespace().nth(1).unwrap()))
+}
+
+#[derive(Debug)]
+pub enum ApiKeyError {
+    BadCount,
+    Missing,
+    Invalid,
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for ApiKey {
+    type Error = ApiKeyError;
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
+        let keys: Vec<_> = request.headers().get("Authorization").collect();
+        match keys.len() {
+            0 => Outcome::Failure((Status::BadRequest, ApiKeyError::Missing)),
+            1 if is_valid(keys[0]) => Outcome::Success(ApiKey(keys[0].to_string())),
+            1 => Outcome::Failure((Status::BadRequest, ApiKeyError::Invalid)),
+            _ => Outcome::Failure((Status::BadRequest, ApiKeyError::BadCount)),
+        }
+    }
 }
