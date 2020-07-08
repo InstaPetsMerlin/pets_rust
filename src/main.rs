@@ -17,11 +17,12 @@ use dotenv::dotenv;
 use std::env;
 use routes::*;
 use std::process::Command;
-mod db;
-mod models;
-mod routes;
-mod schema;
-mod authentication;
+#[path = "datasource/db.rs"] mod db;
+#[path = "repositories/models.rs"] mod models;
+#[path = "delivery/routes.rs"] mod routes;
+// #[path = "delivery/api_key.rs"] mod api_key;
+#[path = "datasource/schema.rs"] mod schema;
+#[path = "use_case/authentication.rs"] mod authentication;
 
 fn rocket() -> rocket::Rocket {
     dotenv().ok();
