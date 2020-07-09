@@ -22,7 +22,7 @@ pub fn get_all(conn: DbConn) -> Json<Value> {
     }))
 }
 
-#[post("/singup", format = "application/json", data = "<new_user>")]
+#[post("/signup", format = "application/json", data = "<new_user>")]
 pub fn new_user(conn: DbConn, new_user: Json<NewUser>) -> Json<Value> {
     let user = new_user.into_inner();
     let status = User::insert_user(&user, &conn);
