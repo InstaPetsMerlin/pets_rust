@@ -1,5 +1,5 @@
 use jsonwebtoken::{decode, DecodingKey, encode, EncodingKey, Header, Validation};
-use jsonwebtoken::errors::{ErrorKind, Error};
+use jsonwebtoken::errors::{Error, ErrorKind};
 use serde::{Deserialize, Serialize};
 
 const AUTH_SECRET: &'static [u8; 15] = b"some_secret_key";

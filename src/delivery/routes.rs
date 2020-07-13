@@ -1,17 +1,16 @@
+use rocket::{Request, request};
 use rocket::http::RawStr;
-use rocket_contrib::json::Json;
 use rocket::http::Status;
+use rocket::request::{FromRequest, Outcome};
+use rocket_contrib::json::Json;
 use serde_json::Value;
 
-use crate::use_case::authentication::{generate_token, authenticate};
-use crate::repositories::models::LoginInfo;
-
 use crate::datasource::db::Conn as DbConn;
-use crate::repositories::models::{NewUser, User};
-use rocket::request::{FromRequest, Outcome};
-use rocket::{Request, request};
 use crate::delivery::api_key::ApiKey;
 use crate::delivery::api_key::is_valid;
+use crate::repositories::models::{NewUser, User};
+use crate::repositories::models::LoginInfo;
+use crate::use_case::authentication::{authenticate, generate_token};
 
 #[post("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {

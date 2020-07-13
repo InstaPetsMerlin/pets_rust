@@ -1,9 +1,10 @@
-use rocket::Outcome;
+use jsonwebtoken::errors::Error;
 use rocket::http::Status;
-use rocket::request::{self, Request, FromRequest};
+use rocket::Outcome;
+use rocket::request::{self, FromRequest, Request};
+
 use crate::
 use_case::authentication::authenticate;
-use jsonwebtoken::errors::Error;
 
 pub struct ApiKey(pub(crate) String);
 
