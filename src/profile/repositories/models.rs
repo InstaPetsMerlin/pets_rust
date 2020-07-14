@@ -1,6 +1,7 @@
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
+use diesel::result::Error;
 
 use crate::datasource::schema::users;
 use crate::datasource::schema::users::dsl::users as all_users;
@@ -50,10 +51,16 @@ impl User {
             .is_ok()
     }
 
-    pub fn get_user_by_username(username: &String, conn: &PgConnection) -> Vec<User> {
-        all_users
+    pub fn get_user_by_username(
+        username: &String,
+        conn: &PgConnection,
+    ) -> Result<Vec<User>, Error> {
+        return match all_users
             .filter(users::username.eq(username))
             .load::<User>(conn)
-            .expect("error!")
+        {
+            Ok(users) => Ok(users),
+            Err(e) => Err(e),
+        };
     }
 }
