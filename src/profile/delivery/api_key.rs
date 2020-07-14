@@ -1,7 +1,7 @@
 use jsonwebtoken::errors::Error;
 use rocket::http::Status;
-use rocket::request::{self, FromRequest, Request};
 use rocket::Outcome;
+use rocket::request::{self, FromRequest, Request};
 
 use crate::profile::use_case::authentication::authenticate;
 

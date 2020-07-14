@@ -17,6 +17,7 @@ use std::process::Command;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
+use post::delivery::routes::*;
 use profile::delivery::routes::*;
 
 use crate::datasource::db;
@@ -28,7 +29,16 @@ mod profile;
 fn rocket() -> rocket::Rocket {
     rocket::ignite().manage(db::init_pool()).mount(
         "/api/v1/",
-        routes![get_all, new_user, get_user, login, health],
+        routes![
+            get_all,
+            new_user,
+            get_user,
+            login,
+            health,
+            post_get_all,
+            post_new,
+            post_get
+        ],
     )
 }
 

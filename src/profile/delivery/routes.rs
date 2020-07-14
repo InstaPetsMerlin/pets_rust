@@ -3,10 +3,10 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
-use crate::profile::delivery::api_key::is_valid;
 use crate::profile::delivery::api_key::ApiKey;
-use crate::profile::repositories::models::LoginInfo;
+use crate::profile::delivery::api_key::is_valid;
 use crate::profile::repositories::models::{NewUser, User};
+use crate::profile::repositories::models::LoginInfo;
 use crate::profile::use_case::authentication::generate_token;
 
 #[post("/users", format = "application/json")]

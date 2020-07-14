@@ -7,15 +7,14 @@ use crate::post::repositories::models::{NewPost, Post};
 use crate::profile::delivery::api_key::ApiKey;
 
 #[get("/posts", format = "application/json")]
-pub fn get_all(_conn: DbConn) -> Json<Value> {
+pub fn post_get_all(conn: DbConn) -> Json<Value> {
     Json(json!({
-        "status": 200,
-        "result": "post",
+        "posts": Post::get_all_posts(&conn),
     }))
 }
 
 #[post("/posts", format = "application/json", data = "<new_post>")]
-pub fn new_post(conn: DbConn, new_post: Json<NewPost>) -> Json<Value> {
+pub fn post_new(conn: DbConn, new_post: Json<NewPost>) -> Json<Value> {
     let post = new_post.into_inner();
     let status = Post::insert_post(&post, &conn);
     Json(json!(
@@ -25,10 +24,17 @@ pub fn new_post(conn: DbConn, new_post: Json<NewPost>) -> Json<Value> {
     }))
 }
 
-#[get("/posts/<post_id>", format = "application/json")]
-pub fn get_post(_conn: DbConn, post_id: &RawStr, key: ApiKey) -> Json<Value> {
+#[get("/posts/<user_id>", format = "application/json")]
+pub fn post_get(conn: DbConn, user_id: i32) -> Json<Value> {
+    let posts = match Post::get_posts_by_user_id(user_id, &conn) {
+        Ok(posts) => posts,
+        Err(_) => {
+            return Json(json!({
+                "result":[],
+            }));
+        }
+    };
     Json(json!({
-        "status": 200,
-        "result": "post",
+        "result": posts,
     }))
 }
