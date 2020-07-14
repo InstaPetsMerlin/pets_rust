@@ -12,7 +12,6 @@ table! {
         user_id -> Int4,
         text -> Varchar,
         image -> Varchar,
-        date -> Timestamp,
     }
 }
 
@@ -25,8 +24,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    pets,
-    posts,
-    users,
-);
+allow_tables_to_appear_in_same_query!(pets, posts, users,);
