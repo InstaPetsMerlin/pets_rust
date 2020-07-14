@@ -1,5 +1,5 @@
-use jsonwebtoken::{decode, DecodingKey, encode, EncodingKey, Header, Validation};
-use jsonwebtoken::errors::{Error, ErrorKind};
+use jsonwebtoken::errors::Error;
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 
 const AUTH_SECRET: &'static [u8; 15] = b"some_secret_key";
@@ -12,19 +12,29 @@ struct Claims {
 }
 
 pub fn authenticate(token: &String) -> Result<bool, Error> {
-    let validation = Validation { ..Validation::default() };
+    let validation = Validation {
+        ..Validation::default()
+    };
     let key = &DecodingKey::from_secret(AUTH_SECRET);
-    let token_data = match decode::<Claims>(&token, key, &validation) {
-        Ok(c) => return Ok(true),
+    let _token_data = match decode::<Claims>(&token, key, &validation) {
+        Ok(_c) => return Ok(true),
         Err(e) => return Err(e),
     };
 }
 
-pub fn generate_token(username: &String, pet_name: &String) -> String {
-    let claim = Claims { sub: "b@b.com".to_owned(), company: "ACME".to_owned(), exp: 10000000000 };
-    let token = match encode(&Header::default(), &claim, &EncodingKey::from_secret(AUTH_SECRET)) {
+pub fn generate_token(_username: &String, _pet_name: &String) -> String {
+    let claim = Claims {
+        sub: "b@b.com".to_owned(),
+        company: "ACME".to_owned(),
+        exp: 10000000000,
+    };
+    let token = match encode(
+        &Header::default(),
+        &claim,
+        &EncodingKey::from_secret(AUTH_SECRET),
+    ) {
         Ok(t) => t,
-        Err(_) => panic!("could not generate token")
+        Err(_) => panic!("could not generate token"),
     };
     token
 }

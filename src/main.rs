@@ -33,12 +33,10 @@ fn rocket() -> rocket::Rocket {
     let database_url = env::var("DATABASE_URL").expect("set DATABASE_URL");
 
     let pool = db::init_pool(database_url);
-    rocket::ignite()
-        .manage(pool)
-        .mount(
-            "/api/v1/",
-            routes![get_all, new_user, find_user, login, health],
-        )
+    rocket::ignite().manage(pool).mount(
+        "/api/v1/",
+        routes![get_all, new_user, find_user, login, health],
+    )
 }
 
 fn main() {

@@ -1,16 +1,14 @@
-use rocket::{Request, request};
 use rocket::http::RawStr;
-use rocket::http::Status;
-use rocket::request::{FromRequest, Outcome};
+
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
-use crate::delivery::api_key::ApiKey;
 use crate::delivery::api_key::is_valid;
-use crate::repositories::models::{NewUser, User};
+use crate::delivery::api_key::ApiKey;
 use crate::repositories::models::LoginInfo;
-use crate::use_case::authentication::{authenticate, generate_token};
+use crate::repositories::models::{NewUser, User};
+use crate::use_case::authentication::generate_token;
 
 #[post("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {
@@ -43,7 +41,10 @@ pub fn login(conn: DbConn, login_info: Json<LoginInfo>) -> Json<Value> {
     let user = User::get_user_by_username(&String::from(login_info.username.as_str()), &conn);
 
     let token = match user.len() {
-        1 => generate_token(&user.first().unwrap().username, &user.first().unwrap().first_name),
+        1 => generate_token(
+            &user.first().unwrap().username,
+            &user.first().unwrap().first_name,
+        ),
         _ => String::from(""),
     };
     Json(json!(
@@ -55,10 +56,10 @@ pub fn login(conn: DbConn, login_info: Json<LoginInfo>) -> Json<Value> {
 
 #[get("/users/<username>", format = "application/json")]
 pub fn find_user(conn: DbConn, username: &RawStr, key: ApiKey) -> Json<Value> {
-    let result = return match is_valid(&*key.0) {
+    let _result = return match is_valid(&*key.0) {
         Ok(_) => Json(json!({
-        "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
-    })),
+            "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
+        })),
         Err(_) => Json(json!({
             "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
         })),
