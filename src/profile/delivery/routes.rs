@@ -1,5 +1,4 @@
 use rocket::http::RawStr;
-
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
@@ -38,8 +37,17 @@ pub fn new_user(conn: DbConn, new_user: Json<NewUser>) -> Json<Value> {
 
 #[post("/login", format = "application/json", data = "<login_info>")]
 pub fn login(conn: DbConn, login_info: Json<LoginInfo>) -> Json<Value> {
-    let user = User::get_user_by_username(&String::from(login_info.username.as_str()), &conn);
+    return match User::get_user_by_username(&String::from(login_info.username.as_str()), &conn) {
+        Ok(u) => authorize_credentials(&u),
+        Err(_) => reject_credentials(),
+    };
+}
 
+fn reject_credentials() -> Json<Value> {
+    Json(json!({"result": "unauthorized"}))
+}
+
+fn authorize_credentials(user: &Vec<User>) -> Json<Value> {
     let token = match user.len() {
         1 => generate_token(
             &user.first().unwrap().username,
@@ -55,13 +63,18 @@ pub fn login(conn: DbConn, login_info: Json<LoginInfo>) -> Json<Value> {
 }
 
 #[get("/users/<username>", format = "application/json")]
-pub fn find_user(conn: DbConn, username: &RawStr, key: ApiKey) -> Json<Value> {
-    let _result = return match is_valid(&*key.0) {
-        Ok(_) => Json(json!({
-            "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
-        })),
-        Err(_) => Json(json!({
-            "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
-        })),
+pub fn get_user(conn: DbConn, username: &RawStr, key: ApiKey) -> Json<Value> {
+    return match is_valid(&*key.0) {
+        Ok(_) => find_user(conn, username),
+        Err(_) => reject_credentials(),
     };
+}
+
+fn find_user(conn: DbConn, username: &RawStr) -> Json<Value> {
+    match User::get_user_by_username(&String::from(username.as_str()), &conn) {
+        Ok(user) => Json(json!({ "result": user })),
+        Err(_) => Json(json!({
+            "result": "User not found",
+        })),
+    }
 }
