@@ -1,10 +1,8 @@
-use rocket::http::RawStr;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
 use crate::post::repositories::models::{NewPost, Post};
-use crate::profile::delivery::api_key::ApiKey;
 
 #[get("/posts", format = "application/json")]
 pub fn post_get_all(conn: DbConn) -> Json<Value> {
