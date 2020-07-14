@@ -32,7 +32,7 @@ you will see something similar to:
 ```sh
 Mounting /api/v1/:
     => POST /api/v1/user application/json (new_user)
-    => GET /api/v1/users/<username> application/json (find_user)
+    => GET /api/v1/users/<username> application/json (get_user)
 🚀 Rocket has launched from http://localhost:8000
 ```
 
