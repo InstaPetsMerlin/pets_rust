@@ -2,7 +2,6 @@
 #![allow(proc_macro_derive_resolution_fallback, unused_attributes)]
 #[macro_use]
 extern crate diesel;
-extern crate dotenv;
 extern crate r2d2;
 extern crate r2d2_diesel;
 #[macro_use]
@@ -13,27 +12,20 @@ extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
 
-use std::env;
 use std::process::Command;
 
-use dotenv::dotenv;
+use rocket_contrib::json::Json;
+use serde_json::Value;
 
-use delivery::routes::*;
+use profile::delivery::routes::*;
 
 use crate::datasource::db;
 
 mod datasource;
-mod delivery;
-mod repositories;
-mod use_case;
+mod profile;
 
 fn rocket() -> rocket::Rocket {
-    dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL").expect("set DATABASE_URL");
-
-    let pool = db::init_pool(database_url);
-    rocket::ignite().manage(pool).mount(
+    rocket::ignite().manage(db::init_pool()).mount(
         "/api/v1/",
         routes![get_all, new_user, find_user, login, health],
     )
@@ -53,4 +45,11 @@ fn main() {
             .expect("Failed to start UI Application")
     };
     rocket().launch();
+}
+
+#[get("/", format = "application/json")]
+pub fn health() -> Json<Value> {
+    Json(json!({
+        "result": String::from("hello, world"),
+    }))
 }

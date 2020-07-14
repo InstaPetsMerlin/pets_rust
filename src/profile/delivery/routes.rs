@@ -4,11 +4,11 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
-use crate::delivery::api_key::is_valid;
-use crate::delivery::api_key::ApiKey;
-use crate::repositories::models::LoginInfo;
-use crate::repositories::models::{NewUser, User};
-use crate::use_case::authentication::generate_token;
+use crate::profile::delivery::api_key::is_valid;
+use crate::profile::delivery::api_key::ApiKey;
+use crate::profile::repositories::models::LoginInfo;
+use crate::profile::repositories::models::{NewUser, User};
+use crate::profile::use_case::authentication::generate_token;
 
 #[post("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {
@@ -64,11 +64,4 @@ pub fn find_user(conn: DbConn, username: &RawStr, key: ApiKey) -> Json<Value> {
             "result": User::get_user_by_username(&String::from(username.as_str()), &conn),
         })),
     };
-}
-
-#[get("/", format = "application/json")]
-pub fn health() -> Json<Value> {
-    Json(json!({
-        "result": String::from("hello, world"),
-    }))
 }

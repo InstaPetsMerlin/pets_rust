@@ -1,16 +1,21 @@
-use std::ops::Deref;
+extern crate dotenv;
 
 use diesel::pg::PgConnection;
+use dotenv::dotenv;
 use r2d2;
 use r2d2_diesel::ConnectionManager;
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
 use rocket::{Outcome, Request, State};
+use std::env;
+use std::ops::Deref;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
-pub fn init_pool(db_url: String) -> Pool {
-    let manager = ConnectionManager::<PgConnection>::new(db_url);
+pub fn init_pool() -> Pool {
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("set DATABASE_URL");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
     r2d2::Pool::new(manager).expect("db pool failure")
 }
 

@@ -3,7 +3,7 @@ use rocket::http::Status;
 use rocket::request::{self, FromRequest, Request};
 use rocket::Outcome;
 
-use crate::use_case::authentication::authenticate;
+use crate::profile::use_case::authentication::authenticate;
 
 pub struct ApiKey(pub(crate) String);
 
