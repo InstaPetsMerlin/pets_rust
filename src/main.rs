@@ -22,6 +22,7 @@ use profile::delivery::routes::*;
 use crate::datasource::db;
 
 mod datasource;
+mod post;
 mod profile;
 
 fn rocket() -> rocket::Rocket {
