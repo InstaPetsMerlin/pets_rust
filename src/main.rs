@@ -27,7 +27,7 @@ mod profile;
 fn rocket() -> rocket::Rocket {
     rocket::ignite().manage(db::init_pool()).mount(
         "/api/v1/",
-        routes![get_all, new_user, find_user, login, health],
+        routes![get_all, new_user, get_user, login, health],
     )
 }
 
