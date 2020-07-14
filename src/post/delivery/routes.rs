@@ -7,7 +7,7 @@ use crate::post::repositories::models::{NewPost, Post};
 use crate::profile::delivery::api_key::ApiKey;
 
 #[get("/posts", format = "application/json")]
-pub fn get_all(conn: DbConn) -> Json<Value> {
+pub fn get_all(_conn: DbConn) -> Json<Value> {
     Json(json!({
         "status": 200,
         "result": "post",
@@ -25,8 +25,8 @@ pub fn new_post(conn: DbConn, new_post: Json<NewPost>) -> Json<Value> {
     }))
 }
 
-#[get("/posts/<postId>", format = "application/json")]
-pub fn get_post(conn: DbConn, postId: &RawStr, key: ApiKey) -> Json<Value> {
+#[get("/posts/<post_id>", format = "application/json")]
+pub fn get_post(_conn: DbConn, post_id: &RawStr, key: ApiKey) -> Json<Value> {
     Json(json!({
         "status": 200,
         "result": "post",
