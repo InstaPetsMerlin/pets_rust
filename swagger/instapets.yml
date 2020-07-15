@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: instapets
+  version: "1.0.0"
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+servers:
+  - url: 'http://localhost:8000/'
+  - url: 'https://instapets.com/'
+  - url: 'https://api.instapets.com/'
+
+paths:
+  /api/v1/health/:
+    get:
+      operationId: api.instapets.health
+      responses:
+        '200':
+          description: Module working
+
+  /api/v1/signup/:
+    post:
+      operationId: api.instapets.singup
+      responses:
+        '200':
+          description: service to sign up, this will create a user in the system
+          content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/singupResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/singupRequest'
+  /api/v1/login/:
+    post:
+      operationId: api.instapets.login
+      responses:
+        '200':
+          description: service to login, this will validate credentials (firebase first then check the system)
+  /api/v1/users/{username}/:
+    get:
+      operationId: api.instapets.profile.get
+      responses:
+        '200':
+          description: service to get the information of all the users in the system
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          schema:
+            description: "username of the users to return"
+            type: "string"
+  /api/v1/users/:
+    get:
+      operationId: api.instapets.profile.getall
+      responses:
+        '200':
+          description: Module working
+
+
+  /api/v1/posts/:
+    get:
+      operationId: api.instapets.posts.getAll
+      responses:
+        '200':
+          description: Module working
+    post:
+      operationId: api.instapets.posts.create
+      responses:
+        '200':
+          description: Module working
+  /api/v1/posts/{user_id}/:
+    get:
+      operationId: api.instapets.posts.get
+      responses:
+        '200':
+          description: Module working
+      parameters:
+        - name: "user_id"
+          in: "path"
+          required: true
+          schema:
+            description: "ID of pet to return"
+            type: "integer"
+            format: "int64"
+
+
+components:
+  parameters:
+    platform:
+      in: header
+      name: platform
+      required: true
+      description: Platform sending the request.
+      schema:
+        type: string
+    language:
+      in: header
+      name: language
+      required: true
+      description: language
+      schema:
+        type: string
+
+  responses:
+    '400':
+      description: 'Bad request, client error.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '401':
+      description: Invalid credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '409':
+      description: Conflict during the process.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    '500':
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: 'Human-readable error explanation, if available.'
+        code:
+          type: integer
+          format: int32
+          description: 'Error code, usually equivalent to the HTTP status code.'
+        error:
+          type: string
+          description: 'Error codename, usually unique to an error category.'
+    singupRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: unique human identifier of the user, can be the email
+        password:
+          type: string
+          description: profile password
+        first_name:
+          type: string
+          description: unique human identifier of the user, can be the email
+    singupResponse:
+      type: object
+      properties:
+        username:
+          type: string
+          description: unique human identifier of the user, can be the email
+        first_name:
+          type: string
+          description: unique human identifier of the user, can be the email
+  securitySchemes:
+    UserAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        ID Token that only authorizes the current end user to the specified
+        endpoint.
