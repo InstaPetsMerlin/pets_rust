@@ -160,12 +160,26 @@ components:
     singupResponse:
       type: object
       properties:
-        username:
+        result:
+          $ref: '#/components/schemas/user'
+        token:
           type: string
-          description: unique human identifier of the user, can be the email
+          required: false
+          description: authorization token that should be present on all services
+        status:
+          type: string
+          description: status of the operation
+    user:
+      type: object
+      properties:
         first_name:
           type: string
-          description: unique human identifier of the user, can be the email
+        id:
+          type: number
+        password:
+          type: string
+        username:
+          type: string
   securitySchemes:
     UserAuth:
       type: http
