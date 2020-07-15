@@ -30,9 +30,9 @@ fn rocket() -> rocket::Rocket {
     rocket::ignite().manage(db::init_pool()).mount(
         "/api/v1/",
         routes![
-            get_all //Get all users,
-            new_user // Create a new User,
-            get_user // get a user by username,
+            get_all, //Get all users,
+            new_user, // Create a new User,
+            get_user, // get a user by username,
             login,
             health,
             post_get_all,
