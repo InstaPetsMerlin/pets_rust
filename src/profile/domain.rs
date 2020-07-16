@@ -1,3 +1,4 @@
-pub struct User {
 
+pub struct User {
+    pub username: String,
 }

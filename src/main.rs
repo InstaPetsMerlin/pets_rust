@@ -18,9 +18,11 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use post::delivery::routes::*;
+use profile::delivery::profile::*;
 use profile::delivery::routes::*;
 
 use crate::datasource::db;
+use crate::profile::use_case::profile_manager_impl::ProfileManagerImpl;
 
 mod datasource;
 mod post;
