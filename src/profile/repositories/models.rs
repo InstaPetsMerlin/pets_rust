@@ -55,11 +55,12 @@ impl User {
     }
 
     pub fn get_user_by_username(
-        username: &String,
+        username: String,
         conn: &PgConnection,
     ) -> Result<Vec<User>, Box<dyn Error>> {
         return match all_users
             .filter(users::username.eq(username))
+            .limit(1)
             .load::<User>(conn)
         {
             Ok(users) => Ok(users),

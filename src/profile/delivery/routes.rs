@@ -12,6 +12,7 @@ use crate::profile::repositories::models::{NewUser, User};
 use crate::profile::repositories::models::LoginInfo;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::profile_manager_impl::ProfileManagerImpl;
+use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {
@@ -43,7 +44,7 @@ pub fn new_user(conn: DbConn, new_user: Json<NewUser>) -> Json<Value> {
 
 #[post("/login", format = "application/json", data = "<login_info>")]
 pub fn login(conn: DbConn, login_info: Json<LoginInfo>) -> Json<Value> {
-    return match User::get_user_by_username(&String::from(login_info.username.as_str()), &conn) {
+    return match User::get_user_by_username(String::from(login_info.username.as_str()), &conn) {
         Ok(u) => authorize_credentials(&u),
         Err(_) => reject_credentials(),
     };
@@ -70,9 +71,10 @@ fn authorize_credentials(user: &Vec<User>) -> Json<Value> {
 
 #[get("/users/<username>", format = "application/json")]
 pub fn get_user(conn: DbConn, username: &RawStr, key: ApiKey) -> Json<Value> {
-    let box_profile_manager = Box::new(ProfileManagerImpl::new());
+    let box_profile_repo = Box::new(ProfileRepositoryImpl::new(conn));
+    let box_profile_manager = Box::new(ProfileManagerImpl::new(box_profile_repo));
     let profile_rest_adapter = ProfileRestAdapter::new(box_profile_manager);
-    match profile_rest_adapter.get_user(conn, username, key) {
+    match profile_rest_adapter.get_user(username, key) {
         Ok(result) => result,
         Err(_) => reject_credentials(),
     }

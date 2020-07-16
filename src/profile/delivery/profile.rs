@@ -18,9 +18,9 @@ impl ProfileRestAdapter {
     pub fn new(profile_manager: Box<dyn ProfileManager>) -> Self {
         Self { profile_manager }
     }
-    pub fn get_user(&self, conn: Conn, user_name: &RawStr, key: ApiKey) -> Result<Json<Value>, Box<dyn Error>> {
+    pub fn get_user(&self, user_name: &RawStr, key: ApiKey) -> Result<Json<Value>, Box<dyn Error>> {
         return match is_valid(&*key.0) {
-            Ok(_) => Ok(self.find_user(conn, user_name.to_string())),
+            Ok(_) => Ok(self.find_user(user_name.to_string())),
             Err(e) => Err(e.into()),
         };
     }
@@ -42,13 +42,13 @@ impl ProfileRestAdapter {
         }
     }
 
-    fn find_user(&self, conn: Conn, user_name: String) -> Json<Value> {
-        match self.profile_manager.get_user_by_username(user_name, conn) {
+    fn find_user(&self, user_name: String) -> Json<Value> {
+        match self.profile_manager.get_user_by_username(user_name) {
             Ok(user) => {
                 let result = PresentationUser { username: user.username };
                 Json(json!({"result": result}))
             }
-            Err(e) => Json(json!({"result": String::from("NOT FOUND")})),
+            Err(e) => Json(json!({"error": String::from("NOT FOUND")})),
         }
     }
 }
