@@ -33,18 +33,10 @@ pub fn get_all(conn: DbConn) -> Json<Value> {
 #[post("/signup", format = "application/json", data = "<new_user>")]
 pub fn new_user(conn: DbConn, new_user: Json<NewUser>) -> Json<Value> {
     let user = new_user.into_inner();
-    let status = User::insert_user(&user, &conn);
-    let token = match status {
-        true => generate_token(&user.username, &user.first_name),
-        false => String::from(""),
-    };
-
-    Json(json!(
-    {
-        "status": status,
-        "result": User::get_all_users(&conn).unwrap().first(),
-        "token": token,
-    }))
+    match User::insert_user(&user, &conn){
+        Ok(User) => Json(json!({"result": "unauthorized"})),
+        Err(_) => Json(json!({"Error": "unauthorized"})),
+    }
 }
 
 #[post("/login", format = "application/json", data = "<login_info>")]
