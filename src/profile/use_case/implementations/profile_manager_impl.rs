@@ -33,7 +33,7 @@ impl ProfileManager for ProfileManagerImpl {
         self.box_profile_repo.get_user_by_username(username)
     }
 
-    fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError> {
+    fn get_all_users(&self) -> Result<Vec<User>, ProfileError> {
         self.box_profile_repo.get_all_users()
     }
 }
