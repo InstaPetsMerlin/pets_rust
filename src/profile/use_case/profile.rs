@@ -9,5 +9,5 @@ pub trait ProfileManager {
     // fn update_user(&self,user: User) -> User;
     // fn delete_user(&self,user: User) -> User;
     fn get_user_by_username(&self, username: String) -> Result<User, ProfileError>;
-    fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError>;
+    fn get_all_users(&self) -> Result<Vec<User>, ProfileError>;
 }
