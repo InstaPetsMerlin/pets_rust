@@ -17,9 +17,9 @@ impl ProfileManagerImpl {
 }
 
 impl ProfileManager for ProfileManagerImpl {
-    // fn create_user(&self, user: User) -> User {
-    //     unimplemented!()
-    // }
+    fn create_user(&self, user: User) -> Result<User, ProfileError> {
+        self.box_profile_repo.insert_user(user)
+    }
     //
     // fn update_user(&self, user: User) -> User {
     //     unimplemented!()
@@ -34,9 +34,6 @@ impl ProfileManager for ProfileManagerImpl {
     }
 
     fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError> {
-        let user = User {
-            username: "all users".to_string(),
-        };
-        Ok(vec![user])
+        self.box_profile_repo.get_all_users()
     }
 }
