@@ -12,7 +12,7 @@ use crate::profile::repositories::implementations::profile::ProfileRepositoryImp
 use crate::profile::repositories::models::LoginInfo;
 use crate::profile::repositories::models::{NewUser, User};
 use crate::profile::use_case::authentication::generate_token;
-use crate::profile::use_case::profile_manager_impl::ProfileManagerImpl;
+use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {

@@ -22,7 +22,6 @@ use profile::delivery::profile::*;
 use profile::delivery::routes::*;
 
 use crate::datasource::db;
-use crate::profile::use_case::profile_manager_impl::ProfileManagerImpl;
 
 mod datasource;
 mod post;
