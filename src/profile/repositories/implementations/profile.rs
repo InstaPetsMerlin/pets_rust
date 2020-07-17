@@ -7,7 +7,7 @@ use crate::datasource::schema::users;
 use crate::datasource::schema::users::dsl::users as all_users;
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
-use crate::profile::repositories::models::User as UserModel;
+use crate::profile::repositories::models::{User as UserModel, NewUser};
 use crate::profile::repositories::profile::ProfileRepository;
 
 pub struct ProfileRepositoryImpl {
@@ -51,7 +51,15 @@ impl ProfileRepository for ProfileRepositoryImpl {
         }
     }
 
-    fn insert_user(&self, username: String) -> Result<User, ProfileError> {
-        unimplemented!()
+    fn insert_user(&self, user: User) -> Result<User, ProfileError> {
+        let new_user = &NewUser {
+            username: user.username,
+            password: "123456".to_string(),
+            first_name: "default".to_string()
+        };
+        match UserModel::insert_user(new_user, &self.conn){
+            Ok(user) => Ok(User{ username: user.username }),
+            Err(_) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
+        }
     }
 }
