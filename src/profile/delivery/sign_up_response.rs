@@ -1,4 +1,4 @@
-use crate::profile::delivery::profile::PresentationUser;
+use crate::profile::delivery::rest_adapater::PresentationUser;
 
 #[derive(Serialize, Deserialize)]
 pub struct SignUpResponse {
