@@ -45,11 +45,14 @@ impl User {
         }
     }
 
-    pub fn insert_user(user: &NewUser, conn: &PgConnection) -> bool {
-        diesel::insert_into(users::table)
+    pub fn insert_user(user: &NewUser, conn: &PgConnection) -> Result<User, Box<dyn Error>> {
+        let inserted_values = diesel::insert_into(users::table)
             .values(user)
-            .execute(conn)
-            .is_ok()
+            .get_result(conn);
+        match inserted_values{
+            Ok(user) => Ok(user),
+            Err(e) => Err(Box::new(e)),
+        }
     }
 
     pub fn get_user_by_username(
