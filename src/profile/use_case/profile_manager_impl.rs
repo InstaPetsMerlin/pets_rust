@@ -1,12 +1,13 @@
 use std::error::Error;
 
 use crate::datasource::db::Conn;
-use crate::profile::domain::{User, ProfileError};
+use crate::profile::domain::User;
+use crate::profile::errors::ProfileError;
 use crate::profile::repositories::profile::ProfileRepository;
 use crate::profile::use_case::profile::ProfileManager;
 
 pub struct ProfileManagerImpl {
-    box_profile_repo: Box<dyn ProfileRepository>
+    box_profile_repo: Box<dyn ProfileRepository>,
 }
 
 impl ProfileManagerImpl {
@@ -34,7 +35,7 @@ impl ProfileManager for ProfileManagerImpl {
 
     fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError> {
         let user = User {
-            username: "all users".to_string()
+            username: "all users".to_string(),
         };
         Ok(vec![user])
     }

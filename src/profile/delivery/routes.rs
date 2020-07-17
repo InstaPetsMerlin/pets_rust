@@ -5,23 +5,28 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
-use crate::profile::delivery::api_key::ApiKey;
 use crate::profile::delivery::api_key::is_valid;
+use crate::profile::delivery::api_key::ApiKey;
 use crate::profile::delivery::profile::{PresentationUser, ProfileRestAdapter};
-use crate::profile::repositories::models::{NewUser, User};
+use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::repositories::models::LoginInfo;
+use crate::profile::repositories::models::{NewUser, User};
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::profile_manager_impl::ProfileManagerImpl;
-use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(conn: DbConn) -> Json<Value> {
     match User::get_all_users(&conn) {
         Ok(users) => {
-            let result : Vec<PresentationUser> = users.into_iter().map(|u| PresentationUser { username: u.username }).collect();
-            Json(json!({"result": result}))
-        },
-        Err(_) => Json(json!({"result": ""}))
+            let result: Vec<PresentationUser> = users
+                .into_iter()
+                .map(|u| PresentationUser {
+                    username: u.username,
+                })
+                .collect();
+            Json(json!({ "result": result }))
+        }
+        Err(_) => Json(json!({"result": ""})),
     }
 }
 

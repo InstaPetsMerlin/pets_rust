@@ -39,9 +39,7 @@ pub struct LoginInfo {
 
 impl User {
     pub fn get_all_users(conn: &PgConnection) -> Result<Vec<User>, Box<dyn Error>> {
-        match all_users
-            .order(users::id.desc())
-            .load::<User>(conn) {
+        match all_users.order(users::id.desc()).load::<User>(conn) {
             Ok(users) => Ok(users),
             Err(e) => Err(Box::new(e)),
         }
