@@ -21,9 +21,14 @@ impl ProfileRepositoryImpl {
 }
 
 impl ProfileRepository for ProfileRepositoryImpl {
-    fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError> {
-        let users = UserModel::get_all_users(&conn);
+    fn get_all_users(&self) -> Result<Vec<User>, ProfileError> {
+       match UserModel::get_all_users(&self.conn) {
+           Ok(users) => Ok(users.into_iter().map(|user|User{ username: user.username }).collect()),
+           Err(_) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
+       }
+
     }
+
     fn get_user_by_username(&self, username: String) -> Result<User, ProfileError> {
         match UserModel::get_user_by_username(username, &self.conn) {
             Ok(users) => {
@@ -44,5 +49,9 @@ impl ProfileRepository for ProfileRepositoryImpl {
             }
             Err(e) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
         }
+    }
+
+    fn insert_user(&self, username: String) -> Result<User, ProfileError> {
+        unimplemented!()
     }
 }
