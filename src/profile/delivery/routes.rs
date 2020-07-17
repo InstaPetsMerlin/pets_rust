@@ -7,7 +7,7 @@ use serde_json::Value;
 use crate::datasource::db::Conn as DbConn;
 use crate::profile::delivery::api_key::is_valid;
 use crate::profile::delivery::api_key::ApiKey;
-use crate::profile::delivery::profile::{PresentationUser, ProfileRestAdapter};
+use crate::profile::delivery::rest_adapater::{PresentationUser, ProfileRestAdapter};
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::repositories::models::LoginInfo;
 use crate::profile::repositories::models::{NewUser, User};
@@ -15,27 +15,24 @@ use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
 
 #[get("/users", format = "application/json")]
-pub fn get_all(conn: DbConn) -> Json<Value> {
-    match User::get_all_users(&conn) {
-        Ok(users) => {
-            let result: Vec<PresentationUser> = users
-                .into_iter()
-                .map(|u| PresentationUser {
-                    username: u.username,
-                })
-                .collect();
-            Json(json!({ "result": result }))
-        }
-        Err(_) => Json(json!({"result": ""})),
+pub fn get_all(conn: DbConn, key: ApiKey) -> Json<Value> {
+    let box_profile_repo = Box::new(ProfileRepositoryImpl::new(conn));
+    let box_profile_manager = Box::new(ProfileManagerImpl::new(box_profile_repo));
+    let profile_rest_adapter = ProfileRestAdapter::new(box_profile_manager);
+    match profile_rest_adapter.get_all_user(key){
+        Ok(users) => users,
+        Err(_) => Json(json!({"error": ""})),
     }
 }
 
 #[post("/signup", format = "application/json", data = "<new_user>")]
 pub fn new_user(conn: DbConn, new_user: Json<NewUser>) -> Json<Value> {
-    let user = new_user.into_inner();
-    match User::insert_user(&user, &conn){
-        Ok(User) => Json(json!({"result": "unauthorized"})),
-        Err(_) => Json(json!({"Error": "unauthorized"})),
+    let box_profile_repo = Box::new(ProfileRepositoryImpl::new(conn));
+    let box_profile_manager = Box::new(ProfileManagerImpl::new(box_profile_repo));
+    let profile_rest_adapter = ProfileRestAdapter::new(box_profile_manager);
+    match profile_rest_adapter.sing_up(new_user){
+        Ok(response) => response,
+        Err(_) => Json(json!({"error": "Could not create user"})),
     }
 }
 
