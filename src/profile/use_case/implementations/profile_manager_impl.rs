@@ -6,17 +6,17 @@ use crate::profile::errors::ProfileError;
 use crate::profile::repositories::profile::ProfileRepository;
 use crate::profile::use_case::profile::ProfileManager;
 
-pub struct ProfileManagerImpl {
-    box_profile_repo: Box<dyn ProfileRepository>,
+pub struct ProfileManagerImpl<T:ProfileRepository> {
+    box_profile_repo: T,
 }
 
-impl ProfileManagerImpl {
-    pub(crate) fn new(box_profile_repo: Box<dyn ProfileRepository>) -> Self {
-        Self { box_profile_repo }
+impl<T:ProfileRepository> ProfileManagerImpl<T> {
+    pub(crate) fn new(profile_repo: T) -> Self {
+        Self { box_profile_repo: profile_repo }
     }
 }
 
-impl ProfileManager for ProfileManagerImpl {
+impl<T:ProfileRepository> ProfileManager for ProfileManagerImpl<T> {
     fn create_user(&self, user: User) -> Result<User, ProfileError> {
         self.box_profile_repo.insert_user(user)
     }

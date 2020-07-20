@@ -14,12 +14,12 @@ use crate::profile::errors::ProfileError;
 use crate::profile::delivery::sign_up_response::SignUpResponse;
 use crate::profile::use_case::authentication::generate_token;
 
-pub struct ProfileRestAdapter {
-    profile_manager: Box<dyn ProfileManager>,
+pub struct ProfileRestAdapter<T:ProfileManager> {
+    profile_manager: T,
 }
 
-impl ProfileRestAdapter {
-    pub fn new(profile_manager: Box<dyn ProfileManager>) -> Self {
+impl<T:ProfileManager> ProfileRestAdapter<T> {
+    pub fn new(profile_manager: T) -> Self {
         Self { profile_manager }
     }
 
