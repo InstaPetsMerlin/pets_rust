@@ -37,7 +37,6 @@ fn rocket() -> rocket::Rocket {
     let profile_repo = ProfileRepositoryImpl::new();
     let manager = ProfileManagerImpl::new(profile_repo);
     let profile_rest_adapter = ProfileRestAdapter::new(manager);
-
     rocket::ignite()
         .manage(db::init_pool())
         .manage(profile_rest_adapter)
@@ -49,6 +48,7 @@ fn rocket() -> rocket::Rocket {
             profileRoutes::get_user, // get a user by username,
             profileRoutes::login,
             profileRoutes::update_user,
+            profileRoutes::delete_user,
             health,
             postRoutes::post_get_all,
             postRoutes::post_new,
