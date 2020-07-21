@@ -32,10 +32,10 @@ impl<T: ProfileRepository> ProfileManager for ProfileManagerImpl<T> {
     //     unimplemented!()
     // }
     //
-    // fn delete_user(&self, user: User) -> User {
-    //     unimplemented!()
-    // }
-    //
+    fn delete_user(&self, user_id: String, conn: Conn) -> Result<User, ProfileError> {
+        self.profile_repo.delete_user(user_id,conn)
+    }
+
     fn get_user_by_username(&self, username: String, conn: Conn) -> Result<User, ProfileError> {
         self.profile_repo.get_user_by_username(username, conn)
     }
