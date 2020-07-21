@@ -56,10 +56,25 @@ impl User {
     }
 
     pub fn update_user(user: &User, conn: &PgConnection) -> Result<User, Box<dyn Error>> {
-        let inserted_values = diesel::update(all_users.find(user.id))
+        let updated_values = diesel::update(all_users.find(user.id))
             .set(user)
             .get_result(conn);
-        match inserted_values {
+        match updated_values {
+            Ok(user) => Ok(user),
+            Err(e) => Err(Box::new(e)),
+        }
+    }
+
+    pub fn delete_user(user_id: String, conn: &PgConnection) -> Result<User, Box<dyn Error>> {
+        let user = &User{
+            id: user_id.parse().unwrap(),
+            username: "".to_string(),
+            password: "".to_string(),
+            first_name: "".to_string()
+        };
+        let deleted_values = diesel::delete(all_users.find(user.id))
+            .get_result(conn);
+        match deleted_values {
             Ok(user) => Ok(user),
             Err(e) => Err(Box::new(e)),
         }
