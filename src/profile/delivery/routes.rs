@@ -6,12 +6,12 @@ use serde_json::Value;
 use crate::datasource::db::Conn as DbConn;
 use crate::profile::delivery::api_key::ApiKey;
 use crate::profile::delivery::rest_adapater::ProfileRestAdapter;
+use crate::profile::delivery::user_request::UserRequest;
+use crate::profile::repositories::implementations::models::{NewUser, User};
+use crate::profile::repositories::implementations::models::LoginInfo;
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
-use crate::profile::repositories::models::{NewUser, User};
-use crate::profile::repositories::models::LoginInfo;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
-use crate::profile::delivery::user_request::UserRequest;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(
@@ -68,6 +68,32 @@ fn authorize_credentials(user: &[User]) -> Json<Value> {
     }))
 }
 
+#[put("/users", format = "application/json", data = "<user_request>")]
+pub fn update_user(
+    conn: DbConn,
+    key: ApiKey,
+    user_request: Json<UserRequest>,
+    adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
+) -> Json<Value> {
+    match adapter.update_user(user_request, key, conn) {
+        Ok(result) => result,
+        Err(_) => reject_credentials(),
+    }
+}
+
+#[delete("/users", format = "application/json", data = "<user_request>")]
+pub fn delete_user(
+    conn: DbConn,
+    user_request: Json<UserRequest>,
+    key: ApiKey,
+    adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
+) -> Json<Value> {
+    match adapter.delete_user(user_request.id.to_string(), key, conn) {
+        Ok(result) => result,
+        Err(_) => reject_credentials(),
+    }
+}
+
 #[get("/users/<username>", format = "application/json")]
 pub fn get_user(
     conn: DbConn,
@@ -76,19 +102,6 @@ pub fn get_user(
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
     match adapter.get_user(username, key, conn) {
-        Ok(result) => result,
-        Err(_) => reject_credentials(),
-    }
-}
-
-#[put("/users", format = "application/json", data = "<user_request>")]
-pub fn update_user(
-    conn: DbConn,
-    key: ApiKey,
-    user_request: Json<UserRequest>,
-    adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
-) -> Json<Value>{
-    match adapter.update_user(user_request, key, conn){
         Ok(result) => result,
         Err(_) => reject_credentials(),
     }
