@@ -9,10 +9,8 @@ use crate::profile::delivery::rest_adapater::ProfileRestAdapter;
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::repositories::models::{NewUser, User};
 use crate::profile::repositories::models::LoginInfo;
-use crate::profile::repositories::profile::ProfileRepository;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
-use crate::profile::use_case::profile::ProfileManager;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(
