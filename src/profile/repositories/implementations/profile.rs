@@ -7,7 +7,7 @@ use crate::datasource::db::Conn;
 
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
-use crate::profile::repositories::models::{NewUser, User as UserModel};
+use crate::profile::repositories::implementations::models::{NewUser, User as UserModel};
 use crate::profile::repositories::profile::ProfileRepository;
 
 pub struct ProfileRepositoryImpl {
@@ -79,6 +79,15 @@ impl ProfileRepository for ProfileRepositoryImpl {
             first_name: "default".to_string(),
         };
         match UserModel::update_user(user, &conn) {
+            Ok(user) => Ok(User {
+                username: user.username,
+            }),
+            Err(_) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
+        }
+    }
+
+    fn delete_user(&self, user_id: String, conn: Conn) -> Result<User, ProfileError> {
+        match UserModel::delete_user(user_id, &conn) {
             Ok(user) => Ok(User {
                 username: user.username,
             }),
