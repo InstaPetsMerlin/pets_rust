@@ -10,11 +10,15 @@ use crate::profile::errors::ProfileError;
 use crate::profile::repositories::models::{NewUser, User as UserModel};
 use crate::profile::repositories::profile::ProfileRepository;
 
-pub struct ProfileRepositoryImpl {}
+pub struct ProfileRepositoryImpl {
+    // conn: Conn
+}
 
 impl ProfileRepositoryImpl {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            // conn: Conn(init_pool().get().expect("Could not get database"))
+        }
     }
 }
 
