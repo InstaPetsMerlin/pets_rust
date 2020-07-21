@@ -1,10 +1,10 @@
-use std::error::Error;
 
-use diesel::{ExpressionMethods, QueryDsl};
+
+
 
 use crate::datasource::db::Conn;
-use crate::datasource::schema::users;
-use crate::datasource::schema::users::dsl::users as all_users;
+
+
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
 use crate::profile::repositories::models::{NewUser, User as UserModel};
@@ -49,7 +49,7 @@ impl ProfileRepository for ProfileRepositoryImpl {
                     }),
                 }
             }
-            Err(e) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
+            Err(_e) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
         }
     }
 

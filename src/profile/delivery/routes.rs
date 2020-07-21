@@ -1,17 +1,14 @@
-use std::error::Error;
-
 use rocket::http::RawStr;
 use rocket::State;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
-use crate::profile::delivery::api_key::is_valid;
 use crate::profile::delivery::api_key::ApiKey;
-use crate::profile::delivery::rest_adapater::{PresentationUser, ProfileRestAdapter};
+use crate::profile::delivery::rest_adapater::ProfileRestAdapter;
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
-use crate::profile::repositories::models::LoginInfo;
 use crate::profile::repositories::models::{NewUser, User};
+use crate::profile::repositories::models::LoginInfo;
 use crate::profile::repositories::profile::ProfileRepository;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
@@ -45,7 +42,7 @@ pub fn new_user(
 pub fn login(
     conn: DbConn,
     login_info: Json<LoginInfo>,
-    adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
+    _adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
     return match User::get_user_by_username(String::from(login_info.username.as_str()), &conn) {
         Ok(u) => authorize_credentials(&u),

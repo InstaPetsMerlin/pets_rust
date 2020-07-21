@@ -5,7 +5,7 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn;
-use crate::datasource::schema::users::columns::username;
+
 use crate::profile::delivery::api_key::{is_valid, ApiKey};
 use crate::profile::delivery::sign_up_response::SignUpResponse;
 use crate::profile::domain::User;
@@ -62,7 +62,7 @@ impl<T: ProfileManager> ProfileRestAdapter<T> {
     pub fn get_all_user(&self, key: ApiKey, conn: Conn) -> Result<Json<Value>, ProfileError> {
         return match is_valid(&*key.0) {
             Ok(_) => self.find_users(conn),
-            Err(e) => Err(ProfileError::Other("Not Authorized".to_string())),
+            Err(_e) => Err(ProfileError::Other("Not Authorized".to_string())),
         };
     }
 
@@ -77,7 +77,7 @@ impl<T: ProfileManager> ProfileRestAdapter<T> {
                     .collect();
                 Ok(Json(json!({ "users": result , "total" : result.len()})))
             }
-            Err(e) => Err(ProfileError::ProfileNotFoundError(
+            Err(_e) => Err(ProfileError::ProfileNotFoundError(
                 "User not found".to_string(),
             )),
         }
@@ -91,7 +91,7 @@ impl<T: ProfileManager> ProfileRestAdapter<T> {
                 };
                 Json(json!({ "result": result }))
             }
-            Err(e) => Json(json!({"error": String::from("NOT FOUND")})),
+            Err(_e) => Json(json!({"error": String::from("NOT FOUND")})),
         }
     }
 }

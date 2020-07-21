@@ -22,12 +22,12 @@ use profile::delivery::rest_adapater::*;
 use profile::delivery::routes::*;
 
 use crate::datasource::db;
-use crate::datasource::db::Conn;
+
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
-use diesel::PgConnection;
-use r2d2::{Error, PooledConnection};
-use r2d2_diesel::ConnectionManager;
+
+
+
 
 mod datasource;
 mod post;
