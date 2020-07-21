@@ -10,7 +10,7 @@ use crate::profile::delivery::sign_up_response::SignUpResponse;
 use crate::profile::delivery::user_request::UserRequest;
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
-use crate::profile::repositories::models::NewUser;
+use crate::profile::repositories::implementations::models::NewUser;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::profile::ProfileManager;
 
@@ -104,6 +104,19 @@ impl<T: ProfileManager> ProfileRestAdapter<T> {
                     }
                     Err(_) => Err(ProfileError::ProfileNotFoundError("Invalid credentials".to_string())),
                 }
+            Err(_) => Err(ProfileError::Other("Invalid credentials".to_string())),
+        }
+    }
+
+    pub fn delete_user(&self, user_id: String, key: ApiKey, conn: Conn) -> Result<Json<Value>, ProfileError> {
+        match is_valid(&*key.0) {
+            Ok(_) => match self.profile_manager.delete_user(user_id.to_string(), conn){
+                Ok(user) => {
+                    let result = PresentationUser{ username: user.username };
+                    Ok(Json(json!(result)))
+                }
+                Err(_) => Err(ProfileError::ProfileNotFoundError("Invalid credentials".to_string())),
+            }
             Err(_) => Err(ProfileError::Other("Invalid credentials".to_string())),
         }
     }
