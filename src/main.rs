@@ -22,28 +22,25 @@ use profile::delivery::rest_adapater::*;
 use profile::delivery::routes::*;
 
 use crate::datasource::db;
+use crate::datasource::db::Conn;
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
-use crate::datasource::db::Conn;
-use r2d2::{PooledConnection, Error};
-use r2d2_diesel::ConnectionManager;
 use diesel::PgConnection;
+use r2d2::{Error, PooledConnection};
+use r2d2_diesel::ConnectionManager;
 
 mod datasource;
 mod post;
 mod profile;
 
 fn rocket() -> rocket::Rocket {
-    let connection = match db::init_pool().get(){
-        Ok(c) => Conn(c),
-        Err(_) => panic!("Could not get connection for"),
-    };
-    let profile_repo = ProfileRepositoryImpl::new(connection);
+    let profile_repo = ProfileRepositoryImpl::new();
     let manager = ProfileManagerImpl::new(profile_repo);
     let profile_rest_adapter = ProfileRestAdapter::new(manager);
 
     rocket::ignite()
         .manage(db::init_pool())
+        .manage(profile_rest_adapter)
         .mount(
         "/api/v1/",
         routes![

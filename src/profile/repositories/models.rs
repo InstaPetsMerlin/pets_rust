@@ -49,7 +49,7 @@ impl User {
         let inserted_values = diesel::insert_into(users::table)
             .values(user)
             .get_result(conn);
-        match inserted_values{
+        match inserted_values {
             Ok(user) => Ok(user),
             Err(e) => Err(Box::new(e)),
         }
