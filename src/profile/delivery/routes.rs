@@ -43,17 +43,17 @@ pub fn login(
     login_info: Json<LoginInfo>,
     _adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    return match User::get_user_by_username(String::from(login_info.username.as_str()), &conn) {
+    match User::get_user_by_username(String::from(login_info.username.as_str()), &conn) {
         Ok(u) => authorize_credentials(&u),
         Err(_) => reject_credentials(),
-    };
+    }
 }
 
 fn reject_credentials() -> Json<Value> {
     Json(json!({"result": "unauthorized"}))
 }
 
-fn authorize_credentials(user: &Vec<User>) -> Json<Value> {
+fn authorize_credentials(user: &[User]) -> Json<Value> {
     let token = match user.len() {
         1 => generate_token(
             &user.first().unwrap().username,

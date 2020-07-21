@@ -1,4 +1,4 @@
-use diesel;
+
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -46,12 +46,12 @@ impl Post {
     }
 
     pub fn get_posts_by_user_id(user_id: i32, conn: &PgConnection) -> Result<Vec<Post>, Error> {
-        return match all_posts
+        match all_posts
             .filter(posts::user_id.eq(user_id))
             .load::<Post>(conn)
         {
             Ok(posts) => Ok(posts),
             Err(e) => Err(e),
-        };
+        }
     }
 }

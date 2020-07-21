@@ -2,7 +2,7 @@ use jsonwebtoken::errors::Error;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 
-const AUTH_SECRET: &'static [u8; 15] = b"some_secret_key";
+const AUTH_SECRET: &[u8; 15] = b"some_secret_key";
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
@@ -11,7 +11,7 @@ struct Claims {
     exp: usize,
 }
 
-pub fn authenticate(token: &String) -> Result<bool, Error> {
+pub fn authenticate(token: &str) -> Result<bool, Error> {
     let validation = Validation {
         ..Validation::default()
     };
@@ -22,19 +22,18 @@ pub fn authenticate(token: &String) -> Result<bool, Error> {
     };
 }
 
-pub fn generate_token(_username: &String, _pet_name: &String) -> String {
+pub fn generate_token(_username: &str, _pet_name: &str) -> String {
     let claim = Claims {
         sub: "b@b.com".to_owned(),
         company: "ACME".to_owned(),
         exp: 10000000000,
     };
-    let token = match encode(
+   match encode(
         &Header::default(),
         &claim,
         &EncodingKey::from_secret(AUTH_SECRET),
     ) {
         Ok(t) => t,
         Err(_) => panic!("could not generate token"),
-    };
-    token
+    }
 }

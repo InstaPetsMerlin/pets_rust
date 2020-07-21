@@ -60,10 +60,10 @@ impl<T: ProfileManager> ProfileRestAdapter<T> {
     }
 
     pub fn get_all_user(&self, key: ApiKey, conn: Conn) -> Result<Json<Value>, ProfileError> {
-        return match is_valid(&*key.0) {
+        match is_valid(&*key.0) {
             Ok(_) => self.find_users(conn),
             Err(_e) => Err(ProfileError::Other("Not Authorized".to_string())),
-        };
+        }
     }
 
     fn find_users(&self, conn: Conn) -> Result<Json<Value>, ProfileError> {

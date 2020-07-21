@@ -44,7 +44,7 @@ impl ProfileRepository for ProfileRepositoryImpl {
                         username: us.username,
                     })
                     .collect();
-                match user_list.into_iter().nth(0) {
+                match user_list.into_iter().next() {
                     None => Err(ProfileError::ProfileNotFoundError(
                         "Error not Found".to_string(),
                     )),

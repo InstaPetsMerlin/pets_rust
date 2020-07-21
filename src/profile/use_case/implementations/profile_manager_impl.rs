@@ -13,7 +13,7 @@ pub struct ProfileManagerImpl<T: ProfileRepository> {
 impl<T: ProfileRepository> ProfileManagerImpl<T> {
     pub(crate) fn new(profile_repo: T) -> Self {
         Self {
-            profile_repo: profile_repo,
+            profile_repo,
         }
     }
 }
