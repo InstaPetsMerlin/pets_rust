@@ -7,21 +7,26 @@ use crate::profile::repositories::profile::ProfileRepository;
 use crate::profile::use_case::profile::ProfileManager;
 
 pub struct ProfileManagerImpl<T: ProfileRepository> {
-    box_profile_repo: T,
+    profile_repo: T,
 }
 
 impl<T: ProfileRepository> ProfileManagerImpl<T> {
     pub(crate) fn new(profile_repo: T) -> Self {
         Self {
-            box_profile_repo: profile_repo,
+            profile_repo: profile_repo,
         }
     }
 }
 
 impl<T: ProfileRepository> ProfileManager for ProfileManagerImpl<T> {
     fn create_user(&self, user: User, conn: Conn) -> Result<User, ProfileError> {
-        self.box_profile_repo.insert_user(user, conn)
+        self.profile_repo.insert_user(user, conn)
     }
+
+    fn update_user(&self, user: User, conn: Conn) -> Result<User, ProfileError>  {
+        self.profile_repo.update_user(user,conn)
+    }
+
     //
     // fn update_user(&self, user: User) -> User {
     //     unimplemented!()
@@ -32,10 +37,10 @@ impl<T: ProfileRepository> ProfileManager for ProfileManagerImpl<T> {
     // }
     //
     fn get_user_by_username(&self, username: String, conn: Conn) -> Result<User, ProfileError> {
-        self.box_profile_repo.get_user_by_username(username, conn)
+        self.profile_repo.get_user_by_username(username, conn)
     }
 
     fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError> {
-        self.box_profile_repo.get_all_users(conn)
+        self.profile_repo.get_all_users(conn)
     }
 }

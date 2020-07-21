@@ -7,7 +7,7 @@ use diesel::prelude::*;
 use crate::datasource::schema::users;
 use crate::datasource::schema::users::dsl::users as all_users;
 
-#[derive(Serialize, Queryable)]
+#[derive(Serialize, Queryable, AsChangeset)]
 pub struct User {
     pub id: i32,
     pub username: String,
@@ -55,17 +55,27 @@ impl User {
         }
     }
 
+    pub fn update_user(user: &User, conn: &PgConnection) -> Result<User, Box<dyn Error>> {
+        let inserted_values = diesel::update(all_users.find(user.id))
+            .set(user)
+            .get_result(conn);
+        match inserted_values {
+            Ok(user) => Ok(user),
+            Err(e) => Err(Box::new(e)),
+        }
+    }
+
     pub fn get_user_by_username(
         username: String,
         conn: &PgConnection,
     ) -> Result<Vec<User>, Box<dyn Error>> {
-        return match all_users
+        match all_users
             .filter(users::username.eq(username))
             .limit(1)
             .load::<User>(conn)
         {
             Ok(users) => Ok(users),
             Err(e) => Err(Box::new(e)),
-        };
+        }
     }
 }

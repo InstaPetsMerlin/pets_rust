@@ -11,6 +11,7 @@ use crate::profile::repositories::models::{NewUser, User};
 use crate::profile::repositories::models::LoginInfo;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
+use crate::profile::delivery::user_request::UserRequest;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(
@@ -75,6 +76,19 @@ pub fn get_user(
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
     match adapter.get_user(username, key, conn) {
+        Ok(result) => result,
+        Err(_) => reject_credentials(),
+    }
+}
+
+#[put("/users", format = "application/json", data = "<user_request>")]
+pub fn update_user(
+    conn: DbConn,
+    key: ApiKey,
+    user_request: Json<UserRequest>,
+    adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
+) -> Json<Value>{
+    match adapter.update_user(user_request, key, conn){
         Ok(result) => result,
         Err(_) => reject_credentials(),
     }

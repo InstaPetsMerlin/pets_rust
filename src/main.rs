@@ -17,9 +17,9 @@ use std::process::Command;
 use rocket_contrib::json::Json;
 use serde_json::Value;
 
-use post::delivery::routes::*;
+use post::delivery::routes as postRoutes;
 use profile::delivery::rest_adapater::*;
-use profile::delivery::routes::*;
+use profile::delivery::routes as profileRoutes;
 
 use crate::datasource::db;
 
@@ -44,14 +44,15 @@ fn rocket() -> rocket::Rocket {
         .mount(
         "/api/v1/",
         routes![
-            get_all,  //Get all users,
-            new_user, // Create a new User,
-            get_user, // get a user by username,
-            login,
+            profileRoutes::get_all,  //Get all users,
+            profileRoutes::new_user, // Create a new User,
+            profileRoutes::get_user, // get a user by username,
+            profileRoutes::login,
+            profileRoutes::update_user,
             health,
-            post_get_all,
-            post_new,
-            post_get
+            postRoutes::post_get_all,
+            postRoutes::post_new,
+            postRoutes::post_get
         ],
     )
 }

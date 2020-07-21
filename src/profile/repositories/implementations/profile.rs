@@ -70,4 +70,19 @@ impl ProfileRepository for ProfileRepositoryImpl {
             Err(_) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
         }
     }
+
+    fn update_user(&self, user: User, conn: Conn) -> Result<User, ProfileError> {
+        let user = &UserModel {
+            id: 1,
+            username: user.username,
+            password: "123456".to_string(),
+            first_name: "default".to_string(),
+        };
+        match UserModel::update_user(user, &conn) {
+            Ok(user) => Ok(User {
+                username: user.username,
+            }),
+            Err(_) => Err(ProfileError::ProfileDBError("Database problem".to_string())),
+        }
+    }
 }

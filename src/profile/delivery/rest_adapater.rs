@@ -5,9 +5,9 @@ use rocket_contrib::json::Json;
 use serde_json::Value;
 
 use crate::datasource::db::Conn;
-
-use crate::profile::delivery::api_key::{is_valid, ApiKey};
+use crate::profile::delivery::api_key::{ApiKey, is_valid};
 use crate::profile::delivery::sign_up_response::SignUpResponse;
+use crate::profile::delivery::user_request::UserRequest;
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
 use crate::profile::repositories::models::NewUser;
@@ -92,6 +92,19 @@ impl<T: ProfileManager> ProfileRestAdapter<T> {
                 Json(json!({ "result": result }))
             }
             Err(_e) => Json(json!({"error": String::from("NOT FOUND")})),
+        }
+    }
+
+    pub fn update_user(&self, new_user: Json<UserRequest>, key: ApiKey, conn: Conn) -> Result<Json<Value>, ProfileError> {
+        match is_valid(&*key.0) {
+            Ok(_) => match self.profile_manager.update_user(User { username: new_user.into_inner().username }, conn){
+                    Ok(user) => {
+                        let result = PresentationUser{ username: user.username };
+                        Ok(Json(json!(result)))
+                    }
+                    Err(_) => Err(ProfileError::ProfileNotFoundError("Invalid credentials".to_string())),
+                }
+            Err(_) => Err(ProfileError::Other("Invalid credentials".to_string())),
         }
     }
 }
