@@ -1,6 +1,6 @@
-use rocket::http::RawStr;
+use rocket::http::{RawStr, Status};
 use rocket::State;
-use rocket_contrib::json::Json;
+use rocket_contrib::json::{Json, JsonValue};
 use serde_json::Value;
 
 use crate::datasource::db::Conn as DbConn;
@@ -12,14 +12,14 @@ use crate::profile::repositories::implementations::models::LoginInfo;
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
+use crate::profile::delivery::response::HttpResponse;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(
-    conn: DbConn,
     key: ApiKey,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    match adapter.get_all_user(key, conn) {
+    match adapter.get_all_user(key) {
         Ok(users) => users,
         Err(_) => Json(json!({"error": ""})),
     }
@@ -27,11 +27,10 @@ pub fn get_all(
 
 #[post("/signup", format = "application/json", data = "<new_user>")]
 pub fn new_user(
-    conn: DbConn,
     new_user: Json<NewUser>,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    match adapter.sing_up(new_user, conn) {
+    match adapter.sing_up(new_user) {
         Ok(response) => response,
         Err(_) => Json(json!({"error": "Could not create user"})),
     }
@@ -39,12 +38,11 @@ pub fn new_user(
 
 #[post("/login", format = "application/json", data = "<login_info>")]
 pub fn login(
-    conn: DbConn,
     login_info: Json<LoginInfo>,
-    _adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
+    adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    match User::get_user_by_username(String::from(login_info.username.as_str()), &conn) {
-        Ok(u) => authorize_credentials(&u),
+    match adapter.login(login_info) {
+        Ok(response) => response,
         Err(_) => reject_credentials(),
     }
 }
@@ -70,12 +68,11 @@ fn authorize_credentials(user: &[User]) -> Json<Value> {
 
 #[put("/users", format = "application/json", data = "<user_request>")]
 pub fn update_user(
-    conn: DbConn,
     key: ApiKey,
     user_request: Json<UserRequest>,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    match adapter.update_user(user_request, key, conn) {
+    match adapter.update_user(user_request, key) {
         Ok(result) => result,
         Err(_) => reject_credentials(),
     }
@@ -83,12 +80,11 @@ pub fn update_user(
 
 #[delete("/users", format = "application/json", data = "<user_request>")]
 pub fn delete_user(
-    conn: DbConn,
     user_request: Json<UserRequest>,
     key: ApiKey,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    match adapter.delete_user(user_request.id.to_string(), key, conn) {
+    match adapter.delete_user(user_request.id.to_string(), key) {
         Ok(result) => result,
         Err(_) => reject_credentials(),
     }
@@ -96,12 +92,11 @@ pub fn delete_user(
 
 #[get("/users/<username>", format = "application/json")]
 pub fn get_user(
-    conn: DbConn,
     username: &RawStr,
     key: ApiKey,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
 ) -> Json<Value> {
-    match adapter.get_user(username, key, conn) {
+    match adapter.get_user(username, key) {
         Ok(result) => result,
         Err(_) => reject_credentials(),
     }
