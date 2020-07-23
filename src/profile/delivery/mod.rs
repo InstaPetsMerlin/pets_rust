@@ -1,3 +1,4 @@
+mod response;
 pub mod user_request;
 pub mod api_key;
 pub mod rest_adapater;
