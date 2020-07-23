@@ -9,22 +9,28 @@ use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
 use crate::profile::repositories::implementations::models::{NewUser, User as UserModel};
 use crate::profile::repositories::profile::ProfileRepository;
+use crate::datasource::db;
+use r2d2::Pool;
+use r2d2_diesel::ConnectionManager;
+use diesel::PgConnection;
+
 
 pub struct ProfileRepositoryImpl {
-    // conn: Conn
+    conn: Pool<ConnectionManager<PgConnection>>
 }
 
 impl ProfileRepositoryImpl {
     pub fn new() -> Self {
         Self {
-            // conn: Conn(init_pool().get().expect("Could not get database"))
+            conn: db::init_pool()
         }
     }
 }
 
 impl ProfileRepository for ProfileRepositoryImpl {
-    fn get_all_users(&self, conn: Conn) -> Result<Vec<User>, ProfileError> {
-        match UserModel::get_all_users(&conn) {
+    fn get_all_users(&self) -> Result<Vec<User>, ProfileError> {
+        let connection = Conn(self.conn.get().expect("could not get DB"));
+        match UserModel::get_all_users(&connection) {
             Ok(users) => Ok(users
                 .into_iter()
                 .map(|user| User {
@@ -35,8 +41,9 @@ impl ProfileRepository for ProfileRepositoryImpl {
         }
     }
 
-    fn get_user_by_username(&self, username: String, conn: Conn) -> Result<User, ProfileError> {
-        match UserModel::get_user_by_username(username, &conn) {
+    fn get_user_by_username(&self, username: String) -> Result<User, ProfileError> {
+        let connection = Conn(self.conn.get().expect("could not get DB"));
+        match UserModel::get_user_by_username(username, &connection) {
             Ok(users) => {
                 let user_list: Vec<User> = users
                     .into_iter()
@@ -57,13 +64,14 @@ impl ProfileRepository for ProfileRepositoryImpl {
         }
     }
 
-    fn insert_user(&self, user: User, conn: Conn) -> Result<User, ProfileError> {
+    fn insert_user(&self, user: User) -> Result<User, ProfileError> {
+        let connection = Conn(self.conn.get().expect("could not get DB"));
         let new_user = &NewUser {
             username: user.username,
             password: "123456".to_string(),
             first_name: "default".to_string(),
         };
-        match UserModel::insert_user(new_user, &conn) {
+        match UserModel::insert_user(new_user, &connection) {
             Ok(user) => Ok(User {
                 username: user.username,
             }),
@@ -71,14 +79,15 @@ impl ProfileRepository for ProfileRepositoryImpl {
         }
     }
 
-    fn update_user(&self, user: User, conn: Conn) -> Result<User, ProfileError> {
+    fn update_user(&self, user: User) -> Result<User, ProfileError> {
+        let connection = Conn(self.conn.get().expect("could not get DB"));
         let user = &UserModel {
             id: 1,
             username: user.username,
             password: "123456".to_string(),
             first_name: "default".to_string(),
         };
-        match UserModel::update_user(user, &conn) {
+        match UserModel::update_user(user, &connection) {
             Ok(user) => Ok(User {
                 username: user.username,
             }),
@@ -86,8 +95,9 @@ impl ProfileRepository for ProfileRepositoryImpl {
         }
     }
 
-    fn delete_user(&self, user_id: String, conn: Conn) -> Result<User, ProfileError> {
-        match UserModel::delete_user(user_id, &conn) {
+    fn delete_user(&self, user_id: String) -> Result<User, ProfileError> {
+        let connection = Conn(self.conn.get().expect("could not get DB"));
+        match UserModel::delete_user(user_id, &connection) {
             Ok(user) => Ok(User {
                 username: user.username,
             }),
