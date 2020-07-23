@@ -38,7 +38,6 @@ fn rocket() -> rocket::Rocket {
     let manager = ProfileManagerImpl::new(profile_repo);
     let profile_rest_adapter = ProfileRestAdapter::new(manager);
     rocket::ignite()
-        .manage(db::init_pool())
         .manage(profile_rest_adapter)
         .mount(
         "/api/v1/",
