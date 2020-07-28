@@ -12,7 +12,6 @@ extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
 
-use std::process::Command;
 
 use rocket_contrib::json::Json;
 use serde_json::Value;
@@ -21,7 +20,6 @@ use post::delivery::routes as postRoutes;
 use profile::delivery::rest_adapater::*;
 use profile::delivery::routes as profileRoutes;
 
-use crate::datasource::db;
 
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
@@ -39,6 +37,7 @@ fn rocket() -> rocket::Rocket {
     let profile_rest_adapter = ProfileRestAdapter::new(manager);
     rocket::ignite()
         .manage(profile_rest_adapter)
+        .mount("/",routes![health])
         .mount(
         "/api/v1/",
         routes![
@@ -48,7 +47,6 @@ fn rocket() -> rocket::Rocket {
             profileRoutes::login,
             profileRoutes::update_user,
             profileRoutes::delete_user,
-            health,
             postRoutes::post_get_all,
             postRoutes::post_new,
             postRoutes::post_get
@@ -57,18 +55,6 @@ fn rocket() -> rocket::Rocket {
 }
 
 fn main() {
-    let _output = if cfg!(target_os = "windows") {
-        Command::new("cmd")
-            .args(&["/C", "cd ui && npm start"])
-            .spawn()
-            .expect("Failed to start UI Application")
-    } else {
-        Command::new("sh")
-            .arg("-c")
-            .arg("cd ui && npm start")
-            .spawn()
-            .expect("Failed to start UI Application")
-    };
     rocket().launch();
 }
 

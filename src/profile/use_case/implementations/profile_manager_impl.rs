@@ -1,6 +1,5 @@
 
 
-use crate::datasource::db::Conn;
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
 use crate::profile::repositories::profile::ProfileRepository;

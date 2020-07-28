@@ -1,18 +1,15 @@
-use rocket::http::{RawStr, Status};
+use rocket::http::RawStr;
 use rocket::State;
-use rocket_contrib::json::{Json, JsonValue};
+use rocket_contrib::json::Json;
 use serde_json::Value;
 
-use crate::datasource::db::Conn as DbConn;
 use crate::profile::delivery::api_key::ApiKey;
 use crate::profile::delivery::rest_adapater::ProfileRestAdapter;
 use crate::profile::delivery::user_request::UserRequest;
-use crate::profile::repositories::implementations::models::{NewUser, User};
 use crate::profile::repositories::implementations::models::LoginInfo;
+use crate::profile::repositories::implementations::models::NewUser;
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
-use crate::profile::use_case::authentication::generate_token;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
-use crate::profile::delivery::response::HttpResponse;
 
 #[get("/users", format = "application/json")]
 pub fn get_all(
@@ -49,21 +46,6 @@ pub fn login(
 
 fn reject_credentials() -> Json<Value> {
     Json(json!({"result": "unauthorized"}))
-}
-
-fn authorize_credentials(user: &[User]) -> Json<Value> {
-    let token = match user.len() {
-        1 => generate_token(
-            &user.first().unwrap().username,
-            &user.first().unwrap().first_name,
-        ),
-        _ => String::from(""),
-    };
-    Json(json!(
-    {
-        "result": user.first(),
-        "token": token,
-    }))
 }
 
 #[put("/users", format = "application/json", data = "<user_request>")]

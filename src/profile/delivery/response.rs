@@ -2,8 +2,7 @@ use rocket::{Response, response};
 use rocket::http::{ContentType, Status};
 use rocket::Request;
 use rocket::response::Responder;
-use rocket_contrib::json::{Json, JsonValue};
-use serde_json::Value;
+use rocket_contrib::json::JsonValue;
 
 #[derive(Debug)]
 pub struct HttpResponse {
