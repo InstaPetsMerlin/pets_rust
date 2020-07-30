@@ -2,7 +2,7 @@ use rocket::{Response, response};
 use rocket::http::{ContentType, Status};
 use rocket::Request;
 use rocket::response::Responder;
-use rocket_contrib::json::{JsonValue, Json};
+use rocket_contrib::json::Json;
 use serde_json::Value;
 
 #[derive(Debug)]

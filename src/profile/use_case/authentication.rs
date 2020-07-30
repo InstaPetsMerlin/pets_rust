@@ -1,4 +1,4 @@
-use jsonwebtoken::{Algorithm, decode, DecodingKey, encode, EncodingKey, Header, Validation};
+use jsonwebtoken::{decode, DecodingKey, encode, EncodingKey, Header, Validation};
 use jsonwebtoken::errors::Error;
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH, Duration};
