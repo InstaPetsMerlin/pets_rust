@@ -27,10 +27,10 @@ pub fn get_all(
 pub fn new_user(
     new_user: Json<NewUser>,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
-) -> Json<Value> {
+) -> HttpResponse {
     match adapter.sing_up(new_user) {
-        Ok(response) => response,
-        Err(_) => Json(json!({"error": "Could not create user"})),
+        Ok(response) => HttpResponse{ status: Status::Ok, body: response},
+        Err(_) => HttpResponse{body: Json(json!({"error": ""})), status: Status::InternalServerError},
     }
 }
 
@@ -38,10 +38,10 @@ pub fn new_user(
 pub fn login(
     login_info: Json<LoginInfo>,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
-) -> Json<Value> {
+) -> HttpResponse {
     match adapter.login(login_info) {
-        Ok(response) => response,
-        Err(_) => reject_credentials(),
+        Ok(response) => HttpResponse{ status: Status::Ok, body: response},
+        Err(_) => HttpResponse{ status: Status::Unauthorized, body: reject_credentials()},
     }
 }
 
@@ -54,10 +54,10 @@ pub fn update_user(
     key: ApiKey,
     user_request: Json<UserRequest>,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
-) -> Json<Value> {
+) -> HttpResponse {
     match adapter.update_user(user_request, key) {
-        Ok(result) => result,
-        Err(_) => reject_credentials(),
+        Ok(result) => HttpResponse{ status: Status::Ok, body:result},
+        Err(_) => HttpResponse{ status: Status::Unauthorized, body: reject_credentials()},
     }
 }
 
@@ -66,10 +66,10 @@ pub fn delete_user(
     user_request: Json<UserRequest>,
     key: ApiKey,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
-) -> Json<Value> {
+) -> HttpResponse {
     match adapter.delete_user(user_request.id.to_string(), key) {
-        Ok(result) => result,
-        Err(_) => reject_credentials(),
+        Ok(result) => HttpResponse{ status: Status::Ok, body:result},
+        Err(_) => HttpResponse{ status: Status::Unauthorized, body: reject_credentials()},
     }
 }
 
@@ -78,9 +78,9 @@ pub fn get_user(
     username: &RawStr,
     key: ApiKey,
     adapter: State<ProfileRestAdapter<ProfileManagerImpl<ProfileRepositoryImpl>>>,
-) -> Json<Value> {
+) -> HttpResponse {
     match adapter.get_user(username, key) {
-        Ok(result) => result,
-        Err(_) => reject_credentials(),
+        Ok(result) => HttpResponse{ status: Status::Ok, body:result},
+        Err(_) => HttpResponse{ status: Status::Unauthorized, body: reject_credentials()},
     }
 }
