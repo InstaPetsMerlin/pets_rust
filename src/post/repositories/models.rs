@@ -5,6 +5,7 @@ use diesel::result::Error;
 
 use crate::datasource::schema::posts;
 use crate::datasource::schema::posts::dsl::posts as all_posts;
+use crate::post::errors::PostError;
 
 #[derive(Serialize, Queryable)]
 pub struct Post {
@@ -31,11 +32,13 @@ pub struct NewPost {
 }
 
 impl Post {
-    pub fn get_all_posts(conn: &PgConnection) -> Vec<Post> {
-        all_posts
+    pub fn get_all_posts(conn: &PgConnection) -> Result<Vec<Post>,PostError> {
+        match all_posts
             .order(posts::id.desc())
-            .load::<Post>(conn)
-            .expect("error!")
+            .load::<Post>(conn){
+            Ok(posts) => Ok(posts),
+            Err(_) => Err(PostError::PostDBError("could not get posts".to_string())),
+        }
     }
 
     pub fn insert_post(post: &NewPost, conn: &PgConnection) -> bool {

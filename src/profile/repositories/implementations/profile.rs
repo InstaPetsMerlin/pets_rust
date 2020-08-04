@@ -1,19 +1,13 @@
+use diesel::PgConnection;
+use r2d2::Pool;
+use r2d2_diesel::ConnectionManager;
 
-
-
-
+use crate::datasource::db;
 use crate::datasource::db::Conn;
-
-
 use crate::profile::domain::User;
 use crate::profile::errors::ProfileError;
 use crate::profile::repositories::implementations::models::{NewUser, User as UserModel};
 use crate::profile::repositories::profile::ProfileRepository;
-use crate::datasource::db;
-use r2d2::Pool;
-use r2d2_diesel::ConnectionManager;
-use diesel::PgConnection;
-
 
 pub struct ProfileRepositoryImpl {
     conn: Pool<ConnectionManager<PgConnection>>

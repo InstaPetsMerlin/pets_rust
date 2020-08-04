@@ -23,8 +23,9 @@ use profile::delivery::routes as profileRoutes;
 
 use crate::profile::repositories::implementations::profile::ProfileRepositoryImpl;
 use crate::profile::use_case::implementations::profile_manager_impl::ProfileManagerImpl;
-
-
+use crate::post::use_case::implementations::post::PostManagerImpl;
+use crate::post::repositories::implementations::post::PostRepositoryImpl;
+use crate::post::delivery::rest_adapter::Rest;
 
 
 mod datasource;
@@ -33,10 +34,14 @@ mod profile;
 
 fn rocket() -> rocket::Rocket {
     let profile_repo = ProfileRepositoryImpl::new();
-    let manager = ProfileManagerImpl::new(profile_repo);
-    let profile_rest_adapter = ProfileRestAdapter::new(manager);
+    let profile_manager = ProfileManagerImpl::new(profile_repo);
+    let profile_rest_adapter = ProfileRestAdapter::new(profile_manager);
+    let post_repo = PostRepositoryImpl::new();
+    let post_manager = PostManagerImpl::new(post_repo);
+    let post_rest_adapter = Rest::new(post_manager);
     rocket::ignite()
         .manage(profile_rest_adapter)
+        .manage(post_rest_adapter)
         .mount("/",routes![health])
         .mount(
         "/api/v1/",
