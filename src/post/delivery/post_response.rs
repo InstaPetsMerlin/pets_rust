@@ -10,7 +10,7 @@ pub struct PostResponse {
 
 
 impl PostResponse{
-    fn from_domain(post:Post) ->Self{
+    pub fn from_domain(post:Post) ->Self{
         Self{
             id: post.id,
             user_id: post.user_id,
